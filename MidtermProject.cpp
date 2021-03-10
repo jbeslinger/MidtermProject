@@ -86,21 +86,19 @@ union Operand
 
 struct Tern // 0000 0 000
 {
-    unsigned char a : 4;
-    unsigned char b : 1;
     unsigned char c : 3;
+    unsigned char b : 1;
+    unsigned char a : 4;
 };
-
 struct Bin1 // 00000 000
 {
-    unsigned char a : 5;
     unsigned char b : 3;
+    unsigned char a : 5;
 };
-
 struct Bin2 // 0000000 0
 {
-    unsigned char a : 7;
     unsigned char b : 1;
+    unsigned char a : 7;
 };
 
 union UnaryInstruction
@@ -137,5 +135,12 @@ CPU cpu;
 
 int main()
 {
+    BinaryInstruction ins;
+    UnaryInstruction u;
+    u.w = 0b10010001;
+    ins.n = u;
 
+    cout << (int) ins.n.w << endl;
+    cout << (int) ins.n.b1.a << endl;
+    cout << (int) ins.n.b1.b << endl;
 }

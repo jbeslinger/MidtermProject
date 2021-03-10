@@ -74,51 +74,51 @@ unsigned char   SNXD   =   0b111      ;
 #pragma region STRUCTURES
 struct OpHalf
 {
-    unsigned short int  l;
-    unsigned short int  r;
+    unsigned short int      l;
+    unsigned short int      r;
 };
 
 union Operand
 {
-    OpHalf          h;
-    unsigned int    w;
+    OpHalf                  h;
+    unsigned int            w;
 };
 
 struct Tern // 0000 0 000
 {
-    unsigned char c : 3;
-    unsigned char b : 1;
-    unsigned char a : 4;
+    unsigned char c     :   3;
+    unsigned char b     :   1;
+    unsigned char a     :   4;
 };
 struct Bin1 // 00000 000
 {
-    unsigned char b : 3;
-    unsigned char a : 5;
+    unsigned char b     :   3;
+    unsigned char a     :   5;
 };
 struct Bin2 // 0000000 0
 {
-    unsigned char b : 1;
-    unsigned char a : 7;
+    unsigned char b     :   1;
+    unsigned char a     :   7;
 };
 
 union UnaryInstruction
 {
-    Tern            t;
-    Bin1            b1;
-    Bin2            b2;
-    unsigned char   w;
+    Tern                    t;
+    Bin1                    b1;
+    Bin2                    b2;
+    unsigned char           w;
 };
 
 struct BinaryInstruction
 {
-    UnaryInstruction    n;
-    Operand             op;
+    UnaryInstruction        n;
+    Operand                 op;
 };
 
 struct Registers
 {
-    unsigned short int  A_X_PC_SP[4];
-    unsigned long       IR : 24;
+    unsigned short int      A_X_PC_SP[4];
+    unsigned long           IR : 24;
 };
 
 struct CPU
@@ -128,19 +128,12 @@ struct CPU
 #pragma endregion
 
 #pragma region FIELDS
-unsigned char mem[65536];
-CPU cpu;
+unsigned char   mem[65536]  ;
+CPU             cpu         ;
 #pragma endregion
 
 
 int main()
 {
-    BinaryInstruction ins;
-    UnaryInstruction u;
-    u.w = 0b10010001;
-    ins.n = u;
 
-    cout << (int) ins.n.w << endl;
-    cout << (int) ins.n.b1.a << endl;
-    cout << (int) ins.n.b1.b << endl;
 }

@@ -69,6 +69,21 @@ string DecToHex(int dec)
     return out;
 }
 
+// Simply adds whitespace every two characters to help with readability
+string ReadOutHex(string hex)
+{
+    string out;
+    
+    for (int i = 0; i < hex.length(); i++)
+    {
+        out = out + hex[i];
+        if ((i + 1) % 2 == 0)
+            out = out + ' ';
+    }
+    
+    return out;
+}
+
 void ExecuteProgram(string code)
 {
 
@@ -176,5 +191,5 @@ CPU             cpu         ;
 
 int main()
 {
-
+    
 }

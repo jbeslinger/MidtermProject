@@ -38,11 +38,15 @@ string DecToHex(int dec)
     int remainder = 0;
     string out;
 
+    if (dec == 0)
+        return "00";
+
     while (dec > 0)
     {
         remainder = dec % 16;
         switch (remainder)
         {
+        case  0: out = '0' + out; break;
         case  1: out = '1' + out; break;
         case  2: out = '2' + out; break;
         case  3: out = '3' + out; break;
@@ -172,6 +176,5 @@ CPU             cpu         ;
 
 int main()
 {
-    cout << HexToDec("9D") << endl;
-    cout << DecToHex(HexToDec("9D")) << endl;
+
 }

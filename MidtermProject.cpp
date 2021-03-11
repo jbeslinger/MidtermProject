@@ -3,6 +3,7 @@
 /// Spring 2021
 /// Midterm Project - PEP/8 Simulator
 
+#include <fstream>
 #include <iostream>
 #include <string>
 using namespace std;
@@ -84,6 +85,7 @@ string ReadOutHex(string hex)
     return out;
 }
 
+// Gets rid of all whitespace in a string
 string TrimWhitespace(string in)
 {
     string out;
@@ -99,26 +101,73 @@ string TrimWhitespace(string in)
     return out;
 }
 
+// Checks for valid Hex characters and will return an error message if needed
+string IsValidHex(string in, int length)
+{
+    if (in.length() != length)
+        return "!! INSTRUCTION MUST BE 3 HEX PAIRS SEPARATED BY WHITESPACE !!";
+    else
+    {
+        for (int i = 0; i < in.length(); i++)
+        {
+            char c = in[i];
+            switch (c)
+            {
+            case '0': continue; break;
+            case '1': continue; break;
+            case '2': continue; break;
+            case '3': continue; break;
+            case '4': continue; break;
+            case '5': continue; break;
+            case '6': continue; break;
+            case '7': continue; break;
+            case '8': continue; break;
+            case '9': continue; break;
+            case 'A': continue; break;
+            case 'B': continue; break;
+            case 'C': continue; break;
+            case 'D': continue; break;
+            case 'E': continue; break;
+            case 'F': continue; break;
+            case ' ': continue; break;
+            default: return "!! INVALID CHARACTER AT POSITION " + to_string(i) + " !!";
+            }
+        }
+        return "";
+    }
+}
+
 string WriteProgram()
 {
     const char* GREETING = "Welcome to the PEP\\8 virtual computer!\n"
         "Please input one 6-digit hex instruction at a time in this format: \'FF FF FF\'\n"
+        "WARNING : Hex numbers are case sensitive so turn on Caps Lock.\n"
         "Terminate the program with exit code \'00 00 00\' to run.\n"
         "You may also supply a .pepm file at the command line to run.\n\n"
         "--PROGRAM--\n";
 
     string out;
-    bool exit = false;
-
     cout << GREETING << endl;
 
     // Program writing loop
-    while (!exit)
+    while (true)
     {
-        string input;
+        string in;
+        bool valid = false;
         
-        cout << ">> "; getline(cin, input);
-        out = out + input;
+        cout << ">> "; getline(cin, in);
+
+        // Check for valid characters
+        string msg = IsValidHex(in, 8);
+        (msg == "") ? (valid = true) : (valid = false);
+
+        if (valid)
+            out = out + TrimWhitespace(in);
+        else
+            cout << msg << "\n\n";
+
+        if (in == "00 00 00")
+            break;
     }
 
     return out;
@@ -233,5 +282,7 @@ string          program     ;
 
 int main()
 {
-    WriteProgram();
+    ofstream out("program.txt");
+    out << ReadOutHex(WriteProgram());
+    out.close();
 }

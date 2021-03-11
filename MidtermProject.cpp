@@ -108,7 +108,15 @@ struct CPU
 
 #pragma endregion
 
+#pragma region FIELDS
+unsigned char   mem[65536]  ;
+CPU             cpu         ;
+
+string          program     ;
+#pragma endregion
+
 #pragma region FUNCTIONS
+// Convert Hexadecimal string and chars to decimal
 int HexToDec(string hex)
 {
     int out = 0;
@@ -132,7 +140,13 @@ int HexToDec(string hex)
     }
     return out;
 }
+int HexToDec(char hex)
+{
+    string s(1, hex);
+    return HexToDec(s);
+}
 
+// Convert decimal to string hexadecimal
 string DecToHex(int dec)
 {
     int remainder = 0;
@@ -236,21 +250,19 @@ string IsValidHex(string in, int length)
     }
 }
 
-void ExecuteInstruction(string code)
-{
-    
-}
-
+// Initiate an input loop for writing a machine code program
 string WriteProgram()
 {
     const char* GREETING = "Welcome to the PEP\\8 virtual computer!\n"
         "Please input one 6-digit hex instruction at a time in this format: \'FF FF FF\'\n"
         "WARNING : Hex numbers are case sensitive so turn on Caps Lock.\n"
-        "Terminate the program with exit code \'00 00 00\' to run.\n"
+        "Terminate the program with exit code \'ZZ\' to run.\n"
         "You may also supply a .pepm file at the command line to run.\n\n"
-        "--PROGRAM--\n";
+        "--PROGRAM--";
+    const string exitCode = "ZZ";
 
     string out;
+
     cout << GREETING << endl;
 
     // Program writing loop
@@ -261,6 +273,9 @@ string WriteProgram()
         
         cout << ">> "; getline(cin, in);
 
+        if (in == exitCode)
+            break;
+
         // Check for valid characters
         string msg = IsValidHex(in, 8);
         (msg == "") ? (valid = true) : (valid = false);
@@ -268,16 +283,31 @@ string WriteProgram()
         if (valid)
             out = out + TrimWhitespace(in);
         else
-            cout << msg << "\n\n";
-
-        if (in == "00 00 00")
-            break;
+            cout << msg << "\n";
     }
 
     return out;
 }
 
-void ExecuteProgram(string code)
+// Load the program into system memory
+void LoadProgram(string code)
+{
+    // Init memory by filling with 0
+    for (int x = 0; x < 65536; x++)
+        mem[x] = '0';
+
+    for (int l = 0; l < code.length(); l++)
+        mem[l] = code[l];
+}
+
+// Find and execute a given instruction given in hex
+void ExecuteInstruction(string code)
+{
+    
+}
+
+// A loop to run the program and display internals
+void ExecuteProgram()
 {
     cout << "--PROGRAM--\n";
 
@@ -285,17 +315,11 @@ void ExecuteProgram(string code)
 }
 #pragma endregion
 
-#pragma region FIELDS
-unsigned char   mem[65536]  ;
-CPU             cpu         ;
-
-string          program     ;
-#pragma endregion
-
 
 int main()
 {
-    /*program = WriteProgram();
+    LoadProgram("AABBCC112233");
+    for (int i = 0; i < 16; i++)
+        cout << HexToDec(mem[i]) << " ";
     cout << endl;
-    ExecuteProgram(program);*/
 }

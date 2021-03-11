@@ -84,6 +84,46 @@ string ReadOutHex(string hex)
     return out;
 }
 
+string TrimWhitespace(string in)
+{
+    string out;
+
+    for (int c = 0; c < in.length(); c++)
+    {
+        if (in[c] == ' ')
+            continue;
+        else
+            out = out + in[c];
+    }
+
+    return out;
+}
+
+string WriteProgram()
+{
+    const char* GREETING = "Welcome to the PEP\\8 virtual computer!\n"
+        "Please input one 6-digit hex instruction at a time in this format: \'FF FF FF\'\n"
+        "Terminate the program with exit code \'00 00 00\' to run.\n"
+        "You may also supply a .pepm file at the command line to run.\n\n"
+        "--PROGRAM--\n";
+
+    string out;
+    bool exit = false;
+
+    cout << GREETING << endl;
+
+    // Program writing loop
+    while (!exit)
+    {
+        string input;
+        
+        cout << ">> "; getline(cin, input);
+        out = out + input;
+    }
+
+    return out;
+}
+
 void ExecuteProgram(string code)
 {
 
@@ -186,10 +226,12 @@ struct CPU
 #pragma region FIELDS
 unsigned char   mem[65536]  ;
 CPU             cpu         ;
+
+string          program     ;
 #pragma endregion
 
 
 int main()
 {
-    
+    WriteProgram();
 }

@@ -32,6 +32,43 @@ int HexToDec(string hex)
     }
     return out;
 }
+
+string DecToHex(int dec)
+{
+    int remainder = 0;
+    string out;
+
+    while (dec > 0)
+    {
+        remainder = dec % 16;
+        switch (remainder)
+        {
+        case  1: out = '1' + out; break;
+        case  2: out = '2' + out; break;
+        case  3: out = '3' + out; break;
+        case  4: out = '4' + out; break;
+        case  5: out = '5' + out; break;
+        case  6: out = '6' + out; break;
+        case  7: out = '7' + out; break;
+        case  8: out = '8' + out; break;
+        case  9: out = '9' + out; break;
+        case 10: out = 'A' + out; break;
+        case 11: out = 'B' + out; break;
+        case 12: out = 'C' + out; break;
+        case 13: out = 'D' + out; break;
+        case 14: out = 'E' + out; break;
+        case 15: out = 'F' + out; break;
+        }
+        dec = dec / 16;
+    }
+
+    return out;
+}
+
+void ExecuteProgram(string code)
+{
+
+}
 #pragma endregion
 
 #pragma region CONSTANTS
@@ -135,5 +172,6 @@ CPU             cpu         ;
 
 int main()
 {
-
+    cout << HexToDec("9D") << endl;
+    cout << DecToHex(HexToDec("9D")) << endl;
 }

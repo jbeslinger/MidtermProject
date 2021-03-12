@@ -231,46 +231,45 @@ string TrimWhitespace(string in)
 }
 
 // Checks for valid Hex characters and will return an error message if needed
-string IsValidHex(string in, int length)
+string IsValidHex(string in)
 {
-    if (in.length() != length)
-        return "!! INSTRUCTION MUST BE 3 HEX PAIRS SEPARATED BY WHITESPACE !!";
-    else
+    if (in.length() % 2 != 0)
+        return "\t!! SINGLE DIGIT HEX NUMBER DETECTED !! INPUT IGNORED";
+
+    for (int i = 0; i < in.length(); i++)
     {
-        for (int i = 0; i < in.length(); i++)
+        char c = in[i];
+        switch (c)
         {
-            char c = in[i];
-            switch (c)
-            {
-            case '0': continue; break;
-            case '1': continue; break;
-            case '2': continue; break;
-            case '3': continue; break;
-            case '4': continue; break;
-            case '5': continue; break;
-            case '6': continue; break;
-            case '7': continue; break;
-            case '8': continue; break;
-            case '9': continue; break;
-            case 'A': continue; break;
-            case 'B': continue; break;
-            case 'C': continue; break;
-            case 'D': continue; break;
-            case 'E': continue; break;
-            case 'F': continue; break;
-            case ' ': continue; break;
-            default: return "!! INVALID CHARACTER AT POSITION " + to_string(i) + " !!";
-            }
+        case '0': continue; break;
+        case '1': continue; break;
+        case '2': continue; break;
+        case '3': continue; break;
+        case '4': continue; break;
+        case '5': continue; break;
+        case '6': continue; break;
+        case '7': continue; break;
+        case '8': continue; break;
+        case '9': continue; break;
+        case 'A': continue; break;
+        case 'B': continue; break;
+        case 'C': continue; break;
+        case 'D': continue; break;
+        case 'E': continue; break;
+        case 'F': continue; break;
+        case ' ': continue; break;
+        default: return "\t!! INVALID CHARACTER AT POSITION " + to_string(i) + " !! INPUT IGNORED";
         }
-        return "";
     }
+    
+    return "";
 }
 
 // Initiate an input loop for writing a machine code program
 string WriteProgram()
 {
     const char* GREETING = "Welcome to the PEP\\8 virtual computer!\n"
-        "Please input one 6-digit hex instruction at a time in this format: \'FF FF FF\'\n"
+        "Please input 2-digit hex numbers to write your code; they may be spaced if you desire. Press return to endline.\n"
         "WARNING : Hex numbers are case sensitive so turn on Caps Lock.\n"
         "Terminate the program with exit code \'ZZ\' to run.\n"
         "You may also supply a .pepm file at the command line to run.\n\n"
@@ -293,7 +292,7 @@ string WriteProgram()
             break;
 
         // Check for valid characters
-        string msg = IsValidHex(in, 8);
+        string msg = IsValidHex(TrimWhitespace(in));
         (msg == "") ? (valid = true) : (valid = false);
 
         if (valid)
@@ -349,6 +348,6 @@ void RunProgram()
 int main()
 {
     LoadProgram(WriteProgram());
-    //LoadProgram("49000E00");
+    //LoadProgram("49000E490072");
     RunProgram();
 }

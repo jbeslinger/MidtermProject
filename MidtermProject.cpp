@@ -272,10 +272,10 @@ string WriteProgram()
     const char* GREETING = "Welcome to the PEP\\8 virtual computer!\n"
         "Please input one 6-digit hex instruction at a time in this format: \'FF FF FF\'\n"
         "WARNING : Hex numbers are case sensitive so turn on Caps Lock.\n"
-        "Terminate the program with exit code \'00 00 00\' to run.\n"
+        "Terminate the program with exit code \'ZZ\' to run.\n"
         "You may also supply a .pepm file at the command line to run.\n\n"
         "--PROGRAM--";
-    const string exitCode = "00 00 00";
+    const string exitCode = "ZZ";
 
     string out;
 
@@ -289,6 +289,9 @@ string WriteProgram()
         
         cout << ">> "; getline(cin, in);
 
+        if (in == exitCode)
+            break;
+
         // Check for valid characters
         string msg = IsValidHex(in, 8);
         (msg == "") ? (valid = true) : (valid = false);
@@ -297,9 +300,6 @@ string WriteProgram()
             out = out + TrimWhitespace(in);
         else
             cout << msg << "\n";
-
-        if (in == exitCode)
-            break;
     }
 
     return out;
@@ -348,6 +348,7 @@ void RunProgram()
 
 int main()
 {
-    LoadProgram("4900240E49002400");
+    LoadProgram(WriteProgram());
+    //LoadProgram("49000E00");
     RunProgram();
 }

@@ -104,26 +104,6 @@ struct CPU
 };
 #pragma endregion
 
-#pragma region INSTRUCTIONS
-void BitwiseInvert(){ };
-void ShiftLeft(){ };
-void ShiftRight(){ };
-void RotateLeft(){ };
-void RotateRight(){ };
-void DecimIn(){ };
-void DecimOut(){ };
-void CharIn(){ };
-void CharOut(){ };
-void Add(){ };
-void Subtract(){ };
-void BitwiseAnd(){ };
-void BitwiseOr(){ };
-void LoadFromMemory(){ };
-void LoadByteFromMemory(){ };
-void StoreToMemory(){ };
-void StoreByteToMemory(){ };
-#pragma endregion
-
 #pragma region FIELDS
 unsigned char   mem[65536]  ;
 CPU             cpu         ;
@@ -346,16 +326,55 @@ string RunProgram()
     Instruction ins {};
     cpu.reg.IR = ins;
 
+    bool running = true;
+
     do
     {
         ins.opcode.whole = mem[*pc];
 
-        switch (ins.opcode.whole)
-        {
-        case STOP: break;
-        }
+        // Decode and then execute the instruction
+        if (ins.opcode.whole == STOP)
+            running = false;
+        else if (ins.opcode.b2.o == BINV)
+            cout << "Bitwise invert r" << endl;
+        else if (ins.opcode.b2.o == SHFL)
+            cout << "Arithmetic shift left r" << endl;
+        else if (ins.opcode.b2.o == SHFR)
+            cout << "Arithmetic shift right r" << endl;
+        else if (ins.opcode.b2.o == ROTL)
+            cout << "Rotate left r" << endl;
+        else if (ins.opcode.b2.o == ROTR)
+            cout << "Rotate right r" << endl;
+        else if (ins.opcode.b1.o == DECI)
+            cout << "Decimal input trap" << endl;
+        else if (ins.opcode.b1.o == DECO)
+            cout << "Decimal output trap" << endl;
+        else if (ins.opcode.b1.o == CHRI)
+            cout << "Character input" << endl;
+        else if (ins.opcode.b1.o == CHRO)
+            cout << "Character output" << endl;
+        else if (ins.opcode.t.o == ADD)
+            cout << "Add to r" << endl;
+        else if (ins.opcode.t.o == SUB)
+            cout << "Subtract from r" << endl;
+        else if (ins.opcode.t.o == AND)
+            cout << "Bitwise AND to r" << endl;
+        else if (ins.opcode.t.o == OR)
+            cout << "Bitwise OR to r" << endl;
+        else if (ins.opcode.t.o == LDR)
+            cout << "Load r from memory" << endl;
+        else if (ins.opcode.t.o == LDB)
+            cout << "Load byte from memory" << endl;
+        else if (ins.opcode.t.o == STR)
+            cout << "Store r to memory" << endl;
+        else if (ins.opcode.t.o == STB)
+            cout << "Store byte r to memory" << endl;
+        else
+            return "\t!! INVALID INSTRUCTION - PROGRAM TERMINATED !!\n\n";
 
-    } while (true);
+        *pc += 1;
+
+    } while (running);
 
     return "Ran successfully!";
 }
@@ -365,6 +384,6 @@ string RunProgram()
 int main()
 {
     //LoadProgram(WriteProgram());
-    LoadProgram("49000E490072");
+    LoadProgram("181C1E202230384850708090A0C0D0E0F000");
     cout << RunProgram();
 }

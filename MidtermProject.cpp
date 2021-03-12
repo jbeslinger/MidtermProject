@@ -74,7 +74,7 @@ struct BipartiteForm1 // 00000 000
 };
 struct BipartiteForm2 // 0000000 0
 {
-    unsigned char           ar : 1;
+    unsigned char           r  : 1;
     unsigned char           o  : 7;
 };
 
@@ -330,21 +330,43 @@ string RunProgram()
 
     do
     {
+        // Fetch the instruction
         ins.opcode.whole = mem[*pc];
 
         // Decode and then execute the instruction
         if (ins.opcode.whole == STOP)
             running = false;
         else if (ins.opcode.b2.o == BINV)
-            cout << "Bitwise invert r" << endl;
+        {
+            unsigned short int* reg = &cpu.reg.A_X_PC_SP[ins.opcode.b2.r];
+            *reg = 0b0000000000000101;
+            *reg = ~(*reg);
+            *pc += 1;
+        }
         else if (ins.opcode.b2.o == SHFL)
-            cout << "Arithmetic shift left r" << endl;
+        {
+            unsigned short int* reg = &cpu.reg.A_X_PC_SP[ins.opcode.b2.r];
+            *reg = *reg << 1;
+            *pc += 1;
+        }
         else if (ins.opcode.b2.o == SHFR)
-            cout << "Arithmetic shift right r" << endl;
+        {
+            unsigned short int* reg = &cpu.reg.A_X_PC_SP[ins.opcode.b2.r];
+            *reg = *reg >> 1;
+            *pc += 1;
+        }
         else if (ins.opcode.b2.o == ROTL)
-            cout << "Rotate left r" << endl;
+        {
+            unsigned short int* reg = &cpu.reg.A_X_PC_SP[ins.opcode.b2.r];
+            *reg = (*reg << 1) | (*reg >> ((sizeof(*reg) * 8) - 1));
+            *pc += 1;
+        }
         else if (ins.opcode.b2.o == ROTR)
-            cout << "Rotate right r" << endl;
+        {
+            unsigned short int* reg = &cpu.reg.A_X_PC_SP[ins.opcode.b2.r];
+            *reg = (*reg >> 1) | (*reg << ((sizeof(*reg) * 8) - 1));
+            *pc += 1;
+        }
         else if (ins.opcode.b1.o == DECI)
             cout << "Decimal input trap" << endl;
         else if (ins.opcode.b1.o == DECO)
@@ -372,8 +394,6 @@ string RunProgram()
         else
             return "\t!! INVALID INSTRUCTION - PROGRAM TERMINATED !!\n\n";
 
-        *pc += 1;
-
     } while (running);
 
     return "Ran successfully!";
@@ -384,6 +404,6 @@ string RunProgram()
 int main()
 {
     //LoadProgram(WriteProgram());
-    LoadProgram("181C1E202230384850708090A0C0D0E0F000");
+    LoadProgram("22");
     cout << RunProgram();
 }

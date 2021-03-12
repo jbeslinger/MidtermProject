@@ -86,7 +86,7 @@ union Opcode
     unsigned char           whole;
 };
 
-struct BinaryInstruction
+struct Instruction
 {
     Opcode                  opcode;
     Operand                 operand;
@@ -95,7 +95,7 @@ struct BinaryInstruction
 struct Registers
 {
     unsigned short int      A_X_PC_SP[4];
-    unsigned long           IR : 24;
+    Instruction             IR;
 };
 
 struct CPU
@@ -322,25 +322,33 @@ void ExecuteInstruction(Opcode i)
 {
 
 }
-void ExecuteInstruction(BinaryInstruction i)
+void ExecuteInstruction(Instruction i)
+{
+
+}
+
+// Write a box to the console that shows the state of the CPU registers
+void DisplayRegisters()
 {
 
 }
 
 // A loop to run the program and display internals
-void RunProgram()
+string RunProgram()
 {
     cout << "--PROGRAM--\n";
 
-    // Increment
     unsigned short int* pc = &cpu.reg.A_X_PC_SP[PC];
-    *pc = 0x000000;
-    
-    while (true)
+    *pc = 0x0000;
+    unsigned short int* sp = &cpu.reg.A_X_PC_SP[SP];
+    *sp = 0xFFF8;
+
+    do
     {
-        // Fetch
-        
-    }
+
+    } while (true);
+
+    return "Ran successfully!";
 }
 #pragma endregion
 
@@ -349,5 +357,5 @@ int main()
 {
     //LoadProgram(WriteProgram());
     LoadProgram("49000E490072");
-    RunProgram();
+    cout << RunProgram();
 }

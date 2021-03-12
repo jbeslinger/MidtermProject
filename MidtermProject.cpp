@@ -83,12 +83,12 @@ union UnaryInstruction
     Tern                    t;
     Bin1                    b1;
     Bin2                    b2;
-    unsigned char           w;
+    unsigned char           whole;
 };
 
 struct BinaryInstruction
 {
-    UnaryInstruction        n;
+    UnaryInstruction        i;
     Operand                 op;
 };
 
@@ -105,7 +105,23 @@ struct CPU
 #pragma endregion
 
 #pragma region INSTRUCTIONS
-
+void BitwiseInvert(){ };
+void ShiftLeft(){ };
+void ShiftRight(){ };
+void RotateLeft(){ };
+void RotateRight(){ };
+void DecimIn(){ };
+void DecimOut(){ };
+void CharIn(){ };
+void CharOut(){ };
+void Add(){ };
+void Subtract(){ };
+void BitwiseAnd(){ };
+void BitwiseOr(){ };
+void LoadFromMemory(){ };
+void LoadByteFromMemory(){ };
+void StoreToMemory(){ };
+void StoreByteToMemory(){ };
 #pragma endregion
 
 #pragma region FIELDS
@@ -256,10 +272,10 @@ string WriteProgram()
     const char* GREETING = "Welcome to the PEP\\8 virtual computer!\n"
         "Please input one 6-digit hex instruction at a time in this format: \'FF FF FF\'\n"
         "WARNING : Hex numbers are case sensitive so turn on Caps Lock.\n"
-        "Terminate the program with exit code \'ZZ\' to run.\n"
+        "Terminate the program with exit code \'00 00 00\' to run.\n"
         "You may also supply a .pepm file at the command line to run.\n\n"
         "--PROGRAM--";
-    const string exitCode = "ZZ";
+    const string exitCode = "00 00 00";
 
     string out;
 
@@ -273,9 +289,6 @@ string WriteProgram()
         
         cout << ">> "; getline(cin, in);
 
-        if (in == exitCode)
-            break;
-
         // Check for valid characters
         string msg = IsValidHex(in, 8);
         (msg == "") ? (valid = true) : (valid = false);
@@ -284,6 +297,9 @@ string WriteProgram()
             out = out + TrimWhitespace(in);
         else
             cout << msg << "\n";
+
+        if (in == exitCode)
+            break;
     }
 
     return out;
@@ -292,34 +308,46 @@ string WriteProgram()
 // Load the program into system memory
 void LoadProgram(string code)
 {
-    // Init memory by filling with 0
-    for (int x = 0; x < 65536; x++)
-        mem[x] = '0';
-
-    for (int l = 0; l < code.length(); l++)
-        mem[l] = code[l];
+    // Reach each byte one at a time
+    unsigned char* addr = &mem[0];
+    for (int l = 0; l < code.length(); l += 2)
+    {
+        string hex; hex += code[l]; hex += code[l + 1];
+        *addr = HexToDec(hex);
+        addr++;
+    }
 }
 
-// Find and execute a given instruction given in hex
-void ExecuteInstruction(string code)
+// Find and execute a given instruction
+void ExecuteInstruction(UnaryInstruction i)
 {
-    
+
+}
+void ExecuteInstruction(BinaryInstruction i)
+{
+
 }
 
 // A loop to run the program and display internals
-void ExecuteProgram()
+void RunProgram()
 {
     cout << "--PROGRAM--\n";
 
-
+    // Increment
+    unsigned short int* pc = &cpu.reg.A_X_PC_SP[PC];
+    *pc = 0x000000;
+    
+    while (true)
+    {
+        // Fetch
+        
+    }
 }
 #pragma endregion
 
 
 int main()
 {
-    LoadProgram("AABBCC112233");
-    for (int i = 0; i < 16; i++)
-        cout << HexToDec(mem[i]) << " ";
-    cout << endl;
+    LoadProgram("4900240E49002400");
+    RunProgram();
 }

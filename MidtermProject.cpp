@@ -49,47 +49,47 @@ unsigned char   SNXD    =   0b111       ;
 #pragma endregion
 
 #pragma region STRUCTURES
-struct OpHalf
+struct Half
 {
-    unsigned short int      l;
     unsigned short int      r;
+    unsigned short int      l;
 };
 
 union Operand
 {
-    OpHalf                  h;
-    unsigned int            w;
+    Half                    half;
+    unsigned int            whole;
 };
 
-struct Tern // 0000 0 000
+struct Tripartite // 0000 0 000
 {
-    unsigned char c : 3;
-    unsigned char b : 1;
-    unsigned char a : 4;
+    unsigned char           a : 3;
+    unsigned char           r : 1;
+    unsigned char           o : 4;
 };
-struct Bin1 // 00000 000
+struct Bipartite1 // 00000 000
 {
-    unsigned char b : 3;
-    unsigned char a : 5;
+    unsigned char           a : 3;
+    unsigned char           o : 5;
 };
-struct Bin2 // 0000000 0
+struct Bipartite2 // 0000000 0
 {
-    unsigned char b : 1;
-    unsigned char a : 7;
+    unsigned char           ar : 1;
+    unsigned char           o  : 7;
 };
 
-union UnaryInstruction
+union Opcode
 {
-    Tern                    t;
-    Bin1                    b1;
-    Bin2                    b2;
+    Tripartite              t;
+    Bipartite1              b1;
+    Bipartite2              b2;
     unsigned char           whole;
 };
 
 struct BinaryInstruction
 {
-    UnaryInstruction        i;
-    Operand                 op;
+    Opcode                  opcode;
+    Operand                 operand;
 };
 
 struct Registers
@@ -100,7 +100,7 @@ struct Registers
 
 struct CPU
 {
-    Registers reg;
+    Registers               reg;
 };
 #pragma endregion
 
@@ -318,7 +318,7 @@ void LoadProgram(string code)
 }
 
 // Find and execute a given instruction
-void ExecuteInstruction(UnaryInstruction i)
+void ExecuteInstruction(Opcode i)
 {
 
 }
@@ -347,7 +347,7 @@ void RunProgram()
 
 int main()
 {
-    LoadProgram(WriteProgram());
-    //LoadProgram("49000E490072");
+    //LoadProgram(WriteProgram());
+    LoadProgram("49000E490072");
     RunProgram();
 }

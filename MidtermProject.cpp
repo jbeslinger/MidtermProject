@@ -10,41 +10,41 @@ using namespace std;
 
 
 #pragma region CONSTANTS
-unsigned char   A       =   0           ;
-unsigned char   X       =   1           ;
-unsigned char   PC      =   2           ;
-unsigned char   SP      =   3           ;
+const unsigned char   A       =   0           ;
+const unsigned char   X       =   1           ;
+const unsigned char   PC      =   2           ;
+const unsigned char   SP      =   3           ;
 
-#pragma region INSTRUCTION SPECIFIERS
-unsigned char   STOP    =   0b00000000  ;
-unsigned char   BINV    =   0b0001100   ;
-unsigned char   SHFL    =   0b0001110   ;
-unsigned char   SHFR    =   0b0001111   ;
-unsigned char   ROTL    =   0b0010000   ;
-unsigned char   ROTR    =   0b0010001   ;
-unsigned char   DECI    =   0b00110     ;
-unsigned char   DECO    =   0b00111     ;
-unsigned char   CHRI    =   0b01001     ;
-unsigned char   CHRO    =   0b01010     ;
-unsigned char   ADD     =   0b0111      ;
-unsigned char   SUB     =   0b1000      ;
-unsigned char   AND     =   0b1001      ;
-unsigned char   OR      =   0b1010      ;
-unsigned char   LDR     =   0b1100      ;
-unsigned char   LDB     =   0b1101      ;
-unsigned char   STR     =   0b1110      ;
-unsigned char   STB     =   0b1111      ;
+#pragma region OPCODES
+const unsigned char   STOP    =   0b00000000  ;
+const unsigned char   BINV    =   0b0001100   ;
+const unsigned char   SHFL    =   0b0001110   ;
+const unsigned char   SHFR    =   0b0001111   ;
+const unsigned char   ROTL    =   0b0010000   ;
+const unsigned char   ROTR    =   0b0010001   ;
+const unsigned char   DECI    =   0b00110     ;
+const unsigned char   DECO    =   0b00111     ;
+const unsigned char   CHRI    =   0b01001     ;
+const unsigned char   CHRO    =   0b01010     ;
+const unsigned char   ADD     =   0b0111      ;
+const unsigned char   SUB     =   0b1000      ;
+const unsigned char   AND     =   0b1001      ;
+const unsigned char   OR      =   0b1010      ;
+const unsigned char   LDR     =   0b1100      ;
+const unsigned char   LDB     =   0b1101      ;
+const unsigned char   STR     =   0b1110      ;
+const unsigned char   STB     =   0b1111      ;
 #pragma endregion
 
 #pragma region ADDRESSING MODES
-unsigned char   IMD     =   0b000       ; // One's digit also stands for 'Immediate'
-unsigned char   DIR     =   0b001       ; // One's digit also stands for 'Indexed'
-unsigned char   INDR    =   0b010       ;
-unsigned char   SRL     =   0b011       ;
-unsigned char   SRLD    =   0b100       ;
-unsigned char   INDX    =   0b101       ;
-unsigned char   SNX     =   0b110       ;
-unsigned char   SNXD    =   0b111       ;
+const unsigned char   IMD     =   0b000       ; // One's digit also stands for 'Immediate'
+const unsigned char   DIR     =   0b001       ; // One's digit also stands for 'Indexed'
+const unsigned char   INDR    =   0b010       ;
+const unsigned char   SRL     =   0b011       ;
+const unsigned char   SRLD    =   0b100       ;
+const unsigned char   INDX    =   0b101       ;
+const unsigned char   SNX     =   0b110       ;
+const unsigned char   SNXD    =   0b111       ;
 #pragma endregion
 #pragma endregion
 
@@ -61,18 +61,18 @@ union Operand
     unsigned int            whole;
 };
 
-struct Tripartite // 0000 0 000
+struct TripartiteForm // 0000 0 000
 {
     unsigned char           a : 3;
     unsigned char           r : 1;
     unsigned char           o : 4;
 };
-struct Bipartite1 // 00000 000
+struct BipartiteForm1 // 00000 000
 {
     unsigned char           a : 3;
     unsigned char           o : 5;
 };
-struct Bipartite2 // 0000000 0
+struct BipartiteForm2 // 0000000 0
 {
     unsigned char           ar : 1;
     unsigned char           o  : 7;
@@ -80,9 +80,9 @@ struct Bipartite2 // 0000000 0
 
 union Opcode
 {
-    Tripartite              t;
-    Bipartite1              b1;
-    Bipartite2              b2;
+    TripartiteForm          t;
+    BipartiteForm1          b1;
+    BipartiteForm2          b2;
     unsigned char           whole;
 };
 
@@ -343,8 +343,17 @@ string RunProgram()
     unsigned short int* sp = &cpu.reg.A_X_PC_SP[SP];
     *sp = 0xFFF8;
 
+    Instruction ins {};
+    cpu.reg.IR = ins;
+
     do
     {
+        ins.opcode.whole = mem[*pc];
+
+        switch (ins.opcode.whole)
+        {
+        case STOP: break;
+        }
 
     } while (true);
 

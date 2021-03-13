@@ -158,7 +158,7 @@ string DecToHex(int dec)
     string out;
 
     if (dec == 0)
-        return "00";
+        out = "00";
 
     while (dec > 0)
     {
@@ -183,6 +183,48 @@ string DecToHex(int dec)
         case 15: out = 'F' + out; break;
         }
         dec = dec / 16;
+    }
+
+    return out;
+}
+string DecToHex(int dec, int numberOfOutputDigits)
+{
+    int remainder = 0;
+    string out;
+
+    if (dec == 0)
+        out = "00";
+
+    while (dec > 0)
+    {
+        remainder = dec % 16;
+        switch (remainder)
+        {
+        case  0: out = '0' + out; break;
+        case  1: out = '1' + out; break;
+        case  2: out = '2' + out; break;
+        case  3: out = '3' + out; break;
+        case  4: out = '4' + out; break;
+        case  5: out = '5' + out; break;
+        case  6: out = '6' + out; break;
+        case  7: out = '7' + out; break;
+        case  8: out = '8' + out; break;
+        case  9: out = '9' + out; break;
+        case 10: out = 'A' + out; break;
+        case 11: out = 'B' + out; break;
+        case 12: out = 'C' + out; break;
+        case 13: out = 'D' + out; break;
+        case 14: out = 'E' + out; break;
+        case 15: out = 'F' + out; break;
+        }
+        dec = dec / 16;
+    }
+
+    // Padding out the hex number with leading zeroes
+    if (out.length() < numberOfOutputDigits)
+    {
+        for (int x = 0; x < numberOfOutputDigits - out.length() + 1; x++)
+            out = "0" + out;
     }
 
     return out;
@@ -260,10 +302,10 @@ string WriteProgram()
     const char* GREETING = "Welcome to the PEP\\8 virtual computer!\n"
         "Please input 2-digit hex numbers to write your code; they may be spaced if you desire. Press return to endline.\n"
         "WARNING : Hex numbers are case sensitive so turn on Caps Lock.\n"
-        "Terminate the program with exit code \'ZZ\' to run.\n"
+        "Terminate the program with exit code \'zz\' to run.\n"
         "You may also supply a .pepm file at the command line to run.\n\n"
         "--PROGRAM--";
-    const string exitCode = "ZZ";
+    const string exitCode = "zz";
 
     string out;
 
@@ -309,13 +351,16 @@ void LoadProgram(string code)
 // Write a box to the console that shows the state of the CPU registers
 void DisplayRegisters()
 {
-
+    cout << "|  A[0x" << DecToHex(cpu.reg.A_X_PC_SP[A], 4) << "]   X[0x" << DecToHex(cpu.reg.A_X_PC_SP[X], 4) << "]  |" << endl;
+    cout << "| PC[0x" << DecToHex(cpu.reg.A_X_PC_SP[PC], 4) << "]   SP[0x" << DecToHex(cpu.reg.A_X_PC_SP[SP], 4) << "]  |" << endl;
+    cout << "|     IR[0x" << DecToHex(cpu.reg.IR.opcode.whole, 2) << "]      |" << endl;
+    cout << endl;
 }
 
 // A loop to run the program and display internals
 string RunProgram()
 {
-    cout << "--PROGRAM--\n";
+    cout << "--RUNNING--\n";
 
     unsigned short int* a  = &cpu.reg.A_X_PC_SP[A ];
     unsigned short int* x  = &cpu.reg.A_X_PC_SP[X ];
@@ -327,6 +372,8 @@ string RunProgram()
 
     // A string for building the output of the program
     string out = "";
+
+    DisplayRegisters();
 
     bool running = true;
     do
@@ -405,7 +452,9 @@ string RunProgram()
             {
             case DIR:
                 cout << ">> ";
-                mem[cpu.reg.IR.opspec.whole] = HexToDec(DecToHex(cin.get()));
+                char in;
+                cin >> in;
+                mem[cpu.reg.IR.opspec.whole] = HexToDec(DecToHex(in));
                 break;
             default:
                 return "\t!! ILLEGAL ADDRESSING MODE - PROGRAM TERMINATED !!\n\n";
@@ -451,11 +500,9 @@ string RunProgram()
             {
             case IMD:
                 cpu.reg.A_X_PC_SP[cpu.reg.IR.opcode.t.r] -= cpu.reg.IR.opspec.whole;
-                cout << "debug";
                 break;
             case DIR:
                 cpu.reg.A_X_PC_SP[cpu.reg.IR.opcode.t.r] -= mem[cpu.reg.IR.opspec.whole];
-                cout << "debug";
                 break;
             default:
                 return "\t!! ILLEGAL ADDRESSING MODE - PROGRAM TERMINATED !!\n\n";
@@ -562,6 +609,7 @@ string RunProgram()
         else
             return "\t!! INVALID INSTRUCTION - PROGRAM TERMINATED !!\n\n";
 
+        DisplayRegisters();
     } while (running);
 
     return out + "\n\n";
@@ -572,5 +620,6 @@ string RunProgram()
 int main()
 {
     LoadProgram(WriteProgram());
+    cout << endl;
     cout << RunProgram();
 }

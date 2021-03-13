@@ -481,7 +481,17 @@ string RunProgram()
         else if (cpu.reg.IR.opcode.t.o  == OR  )   
         {
             cpu.reg.IR.opspec.half.l = mem[*pc + 1]; cpu.reg.IR.opspec.half.r = mem[*pc + 2];
-
+            switch (cpu.reg.IR.opcode.t.aaa)
+            {
+            case IMD:
+                cpu.reg.A_X_PC_SP[cpu.reg.IR.opcode.t.r] |= cpu.reg.IR.opspec.whole;
+                break;
+            case DIR:
+                Opspec opr;
+                opr.half.l = mem[cpu.reg.IR.opspec.whole]; opr.half.r = mem[cpu.reg.IR.opspec.whole + 1];
+                cpu.reg.A_X_PC_SP[cpu.reg.IR.opcode.t.r] |= opr.whole;
+                break;
+            }
             *pc += 3;
         }
         else if (cpu.reg.IR.opcode.t.o  == LDR )  
@@ -524,6 +534,6 @@ int main()
     mem[0x0069] = 0x97;
     mem[0x006A] = 0x28;
     cpu.reg.A_X_PC_SP[0] = 0x9721;
-    LoadProgram("910069");
+    LoadProgram("A00069");
     cout << RunProgram();
 }

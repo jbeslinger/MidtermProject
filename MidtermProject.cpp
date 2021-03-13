@@ -51,14 +51,14 @@ const unsigned char   SNXD    =   0b111       ;
 #pragma region STRUCTURES
 struct Half
 {
-    unsigned short int      r;
-    unsigned short int      l;
+    unsigned char           r;
+    unsigned char           l;
 };
 
-union Operand
+union Opspec
 {
     Half                    half;
-    unsigned int            whole;
+    unsigned short int      whole;
 };
 
 struct TripartiteForm // 0000 0 000
@@ -69,7 +69,7 @@ struct TripartiteForm // 0000 0 000
 };
 struct BipartiteForm1 // 00000 000
 {
-    unsigned char           a : 3;
+    unsigned char           aaa : 3;
     unsigned char           o : 5;
 };
 struct BipartiteForm2 // 0000000 0
@@ -89,7 +89,7 @@ union Opcode
 struct Instruction
 {
     Opcode                  opcode;
-    Operand                 operand;
+    Opspec                  opspec;
 };
 
 struct Registers
@@ -318,79 +318,79 @@ string RunProgram()
 {
     cout << "--PROGRAM--\n";
 
+    unsigned short int* a  = &cpu.reg.A_X_PC_SP[A ];
+    unsigned short int* x  = &cpu.reg.A_X_PC_SP[X ];
     unsigned short int* pc = &cpu.reg.A_X_PC_SP[PC];
-    *pc = 0x0000;
     unsigned short int* sp = &cpu.reg.A_X_PC_SP[SP];
+    
+    *pc = 0x0000;
     *sp = 0xFFF8;
 
-    Instruction ins {};
-    cpu.reg.IR = ins;
-
     bool running = true;
-
     do
     {
-        // Fetch the instruction
-        ins.opcode.whole = mem[*pc];
+        // Fetch the instruction and put it into IR
+        cpu.reg.IR.opcode.whole = mem[*pc];
 
         // Decode and then execute the instruction
-        if (ins.opcode.whole == STOP)
+        if (cpu.reg.IR.opcode.whole == STOP)
             running = false;
-        else if (ins.opcode.b2.o == BINV)
+        else if (cpu.reg.IR.opcode.b2.o == BINV)
         {
-            unsigned short int* reg = &cpu.reg.A_X_PC_SP[ins.opcode.b2.r];
+            unsigned short int* reg = &cpu.reg.A_X_PC_SP[cpu.reg.IR.opcode.b2.r];
             *reg = 0b0000000000000101;
             *reg = ~(*reg);
             *pc += 1;
         }
-        else if (ins.opcode.b2.o == SHFL)
+        else if (cpu.reg.IR.opcode.b2.o == SHFL)
         {
-            unsigned short int* reg = &cpu.reg.A_X_PC_SP[ins.opcode.b2.r];
+            unsigned short int* reg = &cpu.reg.A_X_PC_SP[cpu.reg.IR.opcode.b2.r];
             *reg = *reg << 1;
             *pc += 1;
         }
-        else if (ins.opcode.b2.o == SHFR)
+        else if (cpu.reg.IR.opcode.b2.o == SHFR)
         {
-            unsigned short int* reg = &cpu.reg.A_X_PC_SP[ins.opcode.b2.r];
+            unsigned short int* reg = &cpu.reg.A_X_PC_SP[cpu.reg.IR.opcode.b2.r];
             *reg = *reg >> 1;
             *pc += 1;
         }
-        else if (ins.opcode.b2.o == ROTL)
+        else if (cpu.reg.IR.opcode.b2.o == ROTL)
         {
-            unsigned short int* reg = &cpu.reg.A_X_PC_SP[ins.opcode.b2.r];
+            unsigned short int* reg = &cpu.reg.A_X_PC_SP[cpu.reg.IR.opcode.b2.r];
             *reg = (*reg << 1) | (*reg >> ((sizeof(*reg) * 8) - 1));
             *pc += 1;
         }
-        else if (ins.opcode.b2.o == ROTR)
+        else if (cpu.reg.IR.opcode.b2.o == ROTR)
         {
-            unsigned short int* reg = &cpu.reg.A_X_PC_SP[ins.opcode.b2.r];
+            unsigned short int* reg = &cpu.reg.A_X_PC_SP[cpu.reg.IR.opcode.b2.r];
             *reg = (*reg >> 1) | (*reg << ((sizeof(*reg) * 8) - 1));
             *pc += 1;
         }
-        else if (ins.opcode.b1.o == DECI)
-            cout << "Decimal input trap" << endl;
-        else if (ins.opcode.b1.o == DECO)
-            cout << "Decimal output trap" << endl;
-        else if (ins.opcode.b1.o == CHRI)
-            cout << "Character input" << endl;
-        else if (ins.opcode.b1.o == CHRO)
-            cout << "Character output" << endl;
-        else if (ins.opcode.t.o == ADD)
-            cout << "Add to r" << endl;
-        else if (ins.opcode.t.o == SUB)
-            cout << "Subtract from r" << endl;
-        else if (ins.opcode.t.o == AND)
-            cout << "Bitwise AND to r" << endl;
-        else if (ins.opcode.t.o == OR)
-            cout << "Bitwise OR to r" << endl;
-        else if (ins.opcode.t.o == LDR)
-            cout << "Load r from memory" << endl;
-        else if (ins.opcode.t.o == LDB)
-            cout << "Load byte from memory" << endl;
-        else if (ins.opcode.t.o == STR)
-            cout << "Store r to memory" << endl;
-        else if (ins.opcode.t.o == STB)
-            cout << "Store byte r to memory" << endl;
+        else if (cpu.reg.IR.opcode.b1.o == DECI)
+        {
+            cpu.reg.IR.opspec.half.l = mem[*pc + 1]; cpu.reg.IR.opspec.half.r = mem[*pc + 2];
+            switch (cpu.reg.IR.opcode.b1.aaa)
+            {
+            case DIR:
+                int i; cout << ">> "; cin >> i;
+                mem[cpu.reg.IR.opspec.whole] = HexToDec(DecToHex(i));
+                break;
+            default:
+                return "\t!! ILLEGAL ADDRESSING MODE - PROGRAM TERMINATED !!\n\n";
+            }
+            *pc += 3;
+        }
+        else if (cpu.reg.IR.opcode.b1.o == DECO) { }
+        else if (cpu.reg.IR.opcode.b1.o == CHRI) { }
+        else if (cpu.reg.IR.opcode.b1.o == CHRO) { }
+        else if (cpu.reg.IR.opcode.t.o == ADD)   { }
+        else if (cpu.reg.IR.opcode.t.o == SUB)   { }
+        else if (cpu.reg.IR.opcode.t.o == AND)   { }
+        else if (cpu.reg.IR.opcode.t.o == OR)    { }
+        else if (cpu.reg.IR.opcode.t.o == LDR)   { }
+        else if (cpu.reg.IR.opcode.t.o == LDB)   { }
+        else if (cpu.reg.IR.opcode.t.o == STR)   { }
+        else if (cpu.reg.IR.opcode.t.o == STB)   { }
         else
             return "\t!! INVALID INSTRUCTION - PROGRAM TERMINATED !!\n\n";
 
@@ -404,6 +404,6 @@ string RunProgram()
 int main()
 {
     //LoadProgram(WriteProgram());
-    LoadProgram("22");
+    LoadProgram("310040");
     cout << RunProgram();
 }

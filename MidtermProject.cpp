@@ -519,7 +519,17 @@ string RunProgram()
         else if (cpu.reg.IR.opcode.t.o  == LDB )  
         {
             cpu.reg.IR.opspec.half.l = mem[*pc + 1]; cpu.reg.IR.opspec.half.r = mem[*pc + 2];
-
+            switch (cpu.reg.IR.opcode.t.aaa)
+            {
+            case IMD:
+                cpu.reg.A_X_PC_SP[cpu.reg.IR.opcode.t.r] = cpu.reg.IR.opspec.half.r;
+                break;
+            case DIR:
+                cpu.reg.A_X_PC_SP[cpu.reg.IR.opcode.t.r] = mem[cpu.reg.IR.opspec.whole];
+                break;
+            default:
+                return "\t!! ILLEGAL ADDRESSING MODE - PROGRAM TERMINATED !!\n\n";
+            }
             *pc += 3;
         }
         else if (cpu.reg.IR.opcode.t.o  == STR )  
@@ -555,7 +565,7 @@ string RunProgram()
 int main()
 {
     //LoadProgram(WriteProgram());
-    cpu.reg.A_X_PC_SP[A] = 0x1145;
-    LoadProgram("E1000A");
+    mem[0xABCD] = 0x69;
+    LoadProgram("D1ABCD");
     cout << RunProgram();
 }

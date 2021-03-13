@@ -48,6 +48,7 @@ const unsigned char   SNXD    =   0b111       ;
 #pragma endregion
 #pragma endregion
 
+
 #pragma region STRUCTURES
 struct Half
 {
@@ -104,12 +105,14 @@ struct CPU
 };
 #pragma endregion
 
+
 #pragma region FIELDS
 unsigned char   mem[65536]  ;
 CPU             cpu         ;
 
 string          program     ;
 #pragma endregion
+
 
 #pragma region FUNCTIONS
 // Convert Hexadecimal string and chars to decimal
@@ -326,6 +329,9 @@ string RunProgram()
     *pc = 0x0000;
     *sp = 0xFFF8;
 
+    // A string for building the output of the program
+    string out = "";
+
     bool running = true;
     do
     {
@@ -380,23 +386,84 @@ string RunProgram()
             }
             *pc += 3;
         }
-        else if (cpu.reg.IR.opcode.b1.o == DECO) { }
-        else if (cpu.reg.IR.opcode.b1.o == CHRI) { }
-        else if (cpu.reg.IR.opcode.b1.o == CHRO) { }
-        else if (cpu.reg.IR.opcode.t.o == ADD)   { }
-        else if (cpu.reg.IR.opcode.t.o == SUB)   { }
-        else if (cpu.reg.IR.opcode.t.o == AND)   { }
-        else if (cpu.reg.IR.opcode.t.o == OR)    { }
-        else if (cpu.reg.IR.opcode.t.o == LDR)   { }
-        else if (cpu.reg.IR.opcode.t.o == LDB)   { }
-        else if (cpu.reg.IR.opcode.t.o == STR)   { }
-        else if (cpu.reg.IR.opcode.t.o == STB)   { }
+        else if (cpu.reg.IR.opcode.b1.o == DECO)
+        {
+            cpu.reg.IR.opspec.half.l = mem[*pc + 1]; cpu.reg.IR.opspec.half.r = mem[*pc + 2];
+            switch (cpu.reg.IR.opcode.b1.aaa)
+            {
+            case IMD:
+                out += to_string(cpu.reg.IR.opspec.whole);
+                break;
+            case DIR:
+                out += to_string(mem[cpu.reg.IR.opspec.whole]);
+                break;
+            default:
+                return "\t!! ILLEGAL ADDRESSING MODE - PROGRAM TERMINATED !!\n\n";
+            }
+            *pc += 3;
+        }
+        else if (cpu.reg.IR.opcode.b1.o == CHRI)
+        {
+
+        }
+        else if (cpu.reg.IR.opcode.b1.o == CHRO)
+        {
+
+        }
+        else if (cpu.reg.IR.opcode.t.o  == ADD )  
+        {
+            cpu.reg.IR.opspec.half.l = mem[*pc + 1]; cpu.reg.IR.opspec.half.r = mem[*pc + 2];
+
+            *pc += 3;
+        }
+        else if (cpu.reg.IR.opcode.t.o  == SUB )  
+        {
+            cpu.reg.IR.opspec.half.l = mem[*pc + 1]; cpu.reg.IR.opspec.half.r = mem[*pc + 2];
+
+            *pc += 3;
+        }
+        else if (cpu.reg.IR.opcode.t.o  == AND )  
+        {
+            cpu.reg.IR.opspec.half.l = mem[*pc + 1]; cpu.reg.IR.opspec.half.r = mem[*pc + 2];
+
+            *pc += 3;
+        }
+        else if (cpu.reg.IR.opcode.t.o  == OR  )   
+        {
+            cpu.reg.IR.opspec.half.l = mem[*pc + 1]; cpu.reg.IR.opspec.half.r = mem[*pc + 2];
+
+            *pc += 3;
+        }
+        else if (cpu.reg.IR.opcode.t.o  == LDR )  
+        {
+            cpu.reg.IR.opspec.half.l = mem[*pc + 1]; cpu.reg.IR.opspec.half.r = mem[*pc + 2];
+
+            *pc += 3;
+        }
+        else if (cpu.reg.IR.opcode.t.o  == LDB )  
+        {
+            cpu.reg.IR.opspec.half.l = mem[*pc + 1]; cpu.reg.IR.opspec.half.r = mem[*pc + 2];
+
+            *pc += 3;
+        }
+        else if (cpu.reg.IR.opcode.t.o  == STR )  
+        {
+            cpu.reg.IR.opspec.half.l = mem[*pc + 1]; cpu.reg.IR.opspec.half.r = mem[*pc + 2];
+
+            *pc += 3;
+        }
+        else if (cpu.reg.IR.opcode.t.o  == STB )  
+        {
+            cpu.reg.IR.opspec.half.l = mem[*pc + 1]; cpu.reg.IR.opspec.half.r = mem[*pc + 2];
+
+            *pc += 3;
+        }
         else
             return "\t!! INVALID INSTRUCTION - PROGRAM TERMINATED !!\n\n";
 
     } while (running);
 
-    return "Ran successfully!";
+    return out + "\n\n";
 }
 #pragma endregion
 
@@ -404,6 +471,6 @@ string RunProgram()
 int main()
 {
     //LoadProgram(WriteProgram());
-    LoadProgram("310040");
+    LoadProgram("390045");
     cout << RunProgram();
 }

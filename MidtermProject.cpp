@@ -549,7 +549,14 @@ string RunProgram()
         else if (cpu.reg.IR.opcode.t.o  == STB )  
         {
             cpu.reg.IR.opspec.half.l = mem[*pc + 1]; cpu.reg.IR.opspec.half.r = mem[*pc + 2];
-
+            switch (cpu.reg.IR.opcode.t.aaa)
+            {
+            case DIR:
+                mem[cpu.reg.IR.opspec.whole] = cpu.reg.A_X_PC_SP[cpu.reg.IR.opcode.t.r];
+                break;
+            default:
+                return "\t!! ILLEGAL ADDRESSING MODE - PROGRAM TERMINATED !!\n\n";
+            }
             *pc += 3;
         }
         else
@@ -564,8 +571,6 @@ string RunProgram()
 
 int main()
 {
-    //LoadProgram(WriteProgram());
-    mem[0xABCD] = 0x69;
-    LoadProgram("D1ABCD");
+    LoadProgram(WriteProgram());
     cout << RunProgram();
 }

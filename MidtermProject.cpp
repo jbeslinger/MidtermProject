@@ -64,14 +64,14 @@ union Opspec
 
 struct TripartiteForm // 0000 0 000
 {
-    unsigned char           a : 3;
-    unsigned char           r : 1;
-    unsigned char           o : 4;
+    unsigned char           aaa : 3;
+    unsigned char           r   : 1;
+    unsigned char           o   : 4;
 };
 struct BipartiteForm1 // 00000 000
 {
     unsigned char           aaa : 3;
-    unsigned char           o : 5;
+    unsigned char           o   : 5;
 };
 struct BipartiteForm2 // 0000000 0
 {
@@ -435,13 +435,31 @@ string RunProgram()
         else if (cpu.reg.IR.opcode.t.o  == ADD )  
         {
             cpu.reg.IR.opspec.half.l = mem[*pc + 1]; cpu.reg.IR.opspec.half.r = mem[*pc + 2];
-
+            switch (cpu.reg.IR.opcode.t.aaa)
+            {
+            case IMD:
+                cpu.reg.A_X_PC_SP[cpu.reg.IR.opcode.t.r] += cpu.reg.IR.opspec.whole;
+                break;
+            case DIR:
+                cpu.reg.A_X_PC_SP[cpu.reg.IR.opcode.t.r] += mem[cpu.reg.IR.opspec.whole];
+                break;
+            }
             *pc += 3;
         }
         else if (cpu.reg.IR.opcode.t.o  == SUB )  
         {
             cpu.reg.IR.opspec.half.l = mem[*pc + 1]; cpu.reg.IR.opspec.half.r = mem[*pc + 2];
-
+            switch (cpu.reg.IR.opcode.t.aaa)
+            {
+            case IMD:
+                cpu.reg.A_X_PC_SP[cpu.reg.IR.opcode.t.r] -= cpu.reg.IR.opspec.whole;
+                cout << "debug";
+                break;
+            case DIR:
+                cpu.reg.A_X_PC_SP[cpu.reg.IR.opcode.t.r] -= mem[cpu.reg.IR.opspec.whole];
+                cout << "debug";
+                break;
+            }
             *pc += 3;
         }
         else if (cpu.reg.IR.opcode.t.o  == AND )  
@@ -493,7 +511,8 @@ string RunProgram()
 int main()
 {
     //LoadProgram(WriteProgram());
-    //mem[0x0000] = 'z';
-    LoadProgram("");
+    mem[0x0069] = 0x0001;
+    cpu.reg.A_X_PC_SP[0] = 0x0FFF;
+    LoadProgram("800001810069");
     cout << RunProgram();
 }

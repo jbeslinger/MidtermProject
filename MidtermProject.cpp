@@ -9,13 +9,15 @@
 using namespace std;
 
 
-#pragma region CONSTANTS
+#pragma region Constants
+#pragma region Register Locations
 const unsigned char   A       =   0           ;
 const unsigned char   X       =   1           ;
 const unsigned char   PC      =   2           ;
 const unsigned char   SP      =   3           ;
+#pragma endregion
 
-#pragma region OPCODES
+#pragma region Opcodes
 const unsigned char   STOP    =   0b00000000  ;
 const unsigned char   BINV    =   0b0001100   ;
 const unsigned char   SHFL    =   0b0001110   ;
@@ -36,7 +38,7 @@ const unsigned char   STR     =   0b1110      ;
 const unsigned char   STB     =   0b1111      ;
 #pragma endregion
 
-#pragma region ADDRESSING MODES
+#pragma region Addressing Modes
 const unsigned char   IMD     =   0b000       ; // One's digit also stands for 'Immediate'
 const unsigned char   DIR     =   0b001       ; // One's digit also stands for 'Indexed'
 const unsigned char   INDR    =   0b010       ;
@@ -49,7 +51,8 @@ const unsigned char   SNXD    =   0b111       ;
 #pragma endregion
 
 
-#pragma region STRUCTURES
+#pragma region Structures
+#pragma region Opcode Specifier
 struct Half
 {
     unsigned char           r;
@@ -61,7 +64,9 @@ union Opspec
     Half                    half;
     unsigned short int      whole;
 };
+#pragma endregion
 
+#pragma region Opcode
 struct TripartiteForm // 0000 0 000
 {
     unsigned char           aaa : 3;
@@ -86,6 +91,7 @@ union Opcode
     BipartiteForm2          b2;
     unsigned char           whole;
 };
+#pragma endregion
 
 struct Instruction
 {
@@ -106,7 +112,7 @@ struct CPU
 #pragma endregion
 
 
-#pragma region FIELDS
+#pragma region Fields
 unsigned char   mem[65536]  ;
 CPU             cpu         ;
 
@@ -114,7 +120,7 @@ string          program     ;
 #pragma endregion
 
 
-#pragma region FUNCTIONS
+#pragma region Functions
 // Convert Hexadecimal string and chars to decimal
 int HexToDec(string hex)
 {
@@ -300,16 +306,6 @@ void LoadProgram(string code)
     }
 }
 
-// Find and execute a given instruction
-void ExecuteInstruction(Opcode i)
-{
-
-}
-void ExecuteInstruction(Instruction i)
-{
-
-}
-
 // Write a box to the console that shows the state of the CPU registers
 void DisplayRegisters()
 {
@@ -443,6 +439,8 @@ string RunProgram()
             case DIR:
                 cpu.reg.A_X_PC_SP[cpu.reg.IR.opcode.t.r] += mem[cpu.reg.IR.opspec.whole];
                 break;
+            default:
+                return "\t!! ILLEGAL ADDRESSING MODE - PROGRAM TERMINATED !!\n\n";
             }
             *pc += 3;
         }
@@ -459,6 +457,8 @@ string RunProgram()
                 cpu.reg.A_X_PC_SP[cpu.reg.IR.opcode.t.r] -= mem[cpu.reg.IR.opspec.whole];
                 cout << "debug";
                 break;
+            default:
+                return "\t!! ILLEGAL ADDRESSING MODE - PROGRAM TERMINATED !!\n\n";
             }
             *pc += 3;
         }
@@ -475,6 +475,8 @@ string RunProgram()
                 opr.half.l = mem[cpu.reg.IR.opspec.whole]; opr.half.r = mem[cpu.reg.IR.opspec.whole + 1];
                 cpu.reg.A_X_PC_SP[cpu.reg.IR.opcode.t.r] &= opr.whole;
                 break;
+            default:
+                return "\t!! ILLEGAL ADDRESSING MODE - PROGRAM TERMINATED !!\n\n";
             }
             *pc += 3;
         }
@@ -491,13 +493,27 @@ string RunProgram()
                 opr.half.l = mem[cpu.reg.IR.opspec.whole]; opr.half.r = mem[cpu.reg.IR.opspec.whole + 1];
                 cpu.reg.A_X_PC_SP[cpu.reg.IR.opcode.t.r] |= opr.whole;
                 break;
+            default:
+                return "\t!! ILLEGAL ADDRESSING MODE - PROGRAM TERMINATED !!\n\n";
             }
             *pc += 3;
         }
         else if (cpu.reg.IR.opcode.t.o  == LDR )  
         {
             cpu.reg.IR.opspec.half.l = mem[*pc + 1]; cpu.reg.IR.opspec.half.r = mem[*pc + 2];
-
+            switch (cpu.reg.IR.opcode.t.aaa)
+            {
+            case IMD:
+                cpu.reg.A_X_PC_SP[cpu.reg.IR.opcode.t.r] = cpu.reg.IR.opspec.whole;
+                break;
+            case DIR:
+                Opspec opr;
+                opr.half.l = mem[cpu.reg.IR.opspec.whole]; opr.half.r = mem[cpu.reg.IR.opspec.whole + 1];
+                cpu.reg.A_X_PC_SP[cpu.reg.IR.opcode.t.r] = opr.whole;
+                break;
+            default:
+                return "\t!! ILLEGAL ADDRESSING MODE - PROGRAM TERMINATED !!\n\n";
+            }
             *pc += 3;
         }
         else if (cpu.reg.IR.opcode.t.o  == LDB )  
@@ -509,7 +525,15 @@ string RunProgram()
         else if (cpu.reg.IR.opcode.t.o  == STR )  
         {
             cpu.reg.IR.opspec.half.l = mem[*pc + 1]; cpu.reg.IR.opspec.half.r = mem[*pc + 2];
-
+            switch (cpu.reg.IR.opcode.t.aaa)
+            {
+            case DIR:
+                Opspec o; o.whole = cpu.reg.A_X_PC_SP[cpu.reg.IR.opcode.t.r];
+                mem[cpu.reg.IR.opspec.half.l] = o.half.l; mem[cpu.reg.IR.opspec.half.r] = o.half.r;
+                break;
+            default:
+                return "\t!! ILLEGAL ADDRESSING MODE - PROGRAM TERMINATED !!\n\n";
+            }
             *pc += 3;
         }
         else if (cpu.reg.IR.opcode.t.o  == STB )  
@@ -531,9 +555,7 @@ string RunProgram()
 int main()
 {
     //LoadProgram(WriteProgram());
-    mem[0x0069] = 0x97;
-    mem[0x006A] = 0x28;
-    cpu.reg.A_X_PC_SP[0] = 0x9721;
-    LoadProgram("A00069");
+    cpu.reg.A_X_PC_SP[A] = 0x1145;
+    LoadProgram("E1000A");
     cout << RunProgram();
 }

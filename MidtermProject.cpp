@@ -404,11 +404,33 @@ string RunProgram()
         }
         else if (cpu.reg.IR.opcode.b1.o == CHRI)
         {
-
+            cpu.reg.IR.opspec.half.l = mem[*pc + 1]; cpu.reg.IR.opspec.half.r = mem[*pc + 2];
+            switch (cpu.reg.IR.opcode.b1.aaa)
+            {
+            case DIR:
+                cout << ">> ";
+                mem[cpu.reg.IR.opspec.whole] = HexToDec(DecToHex(cin.get()));
+                break;
+            default:
+                return "\t!! ILLEGAL ADDRESSING MODE - PROGRAM TERMINATED !!\n\n";
+            }
+            *pc += 3;
         }
         else if (cpu.reg.IR.opcode.b1.o == CHRO)
         {
-
+            cpu.reg.IR.opspec.half.l = mem[*pc + 1]; cpu.reg.IR.opspec.half.r = mem[*pc + 2];
+            switch (cpu.reg.IR.opcode.b1.aaa)
+            {
+            case IMD:
+                out += cpu.reg.IR.opspec.whole;
+                break;
+            case DIR:
+                out += mem[cpu.reg.IR.opspec.whole];
+                break;
+            default:
+                return "\t!! ILLEGAL ADDRESSING MODE - PROGRAM TERMINATED !!\n\n";
+            }
+            *pc += 3;
         }
         else if (cpu.reg.IR.opcode.t.o  == ADD )  
         {
@@ -471,6 +493,7 @@ string RunProgram()
 int main()
 {
     //LoadProgram(WriteProgram());
-    LoadProgram("390045");
+    //mem[0x0000] = 'z';
+    LoadProgram("");
     cout << RunProgram();
 }

@@ -662,5 +662,8 @@ int main(int argc, char* argv[])
     LoadProgram(program);
     cout << endl;
     cout << RunProgram();
+    
+    system("pause");
+
     return 0;
 }

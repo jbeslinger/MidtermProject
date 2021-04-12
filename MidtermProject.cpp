@@ -626,8 +626,13 @@ int main(int argc, char* argv[])
 {
     string program;
 
+    // If the user does not provide any arguments
+    if (argc == 1)
+    {
+    program = WriteProgram();
+    }
     // If the user provides a valid file on the command line
-    if (argc == 2)
+    else if (argc == 2)
     {
         try
         {
@@ -642,15 +647,17 @@ int main(int argc, char* argv[])
         }
         catch (int e)
         {
-            cout << "Inputted file was either not valid or not found." << endl;
+            cout << "Inputted file was either not valid." << endl;
             return e; // Close program
         }
     }
-    // If the user does not provide any arguments
+    // If the user provides too many arguments
     else
     {
-        program = WriteProgram();
+        cout << "Provided arguments are invalid. Ignored." << endl;
+        return 1; // Close program
     }
+    
 
     LoadProgram(program);
     cout << endl;

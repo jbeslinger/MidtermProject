@@ -155,6 +155,9 @@
     <None Include="..\..\..\Google Drive\School\Spring 2021\Computer Organization\PEP8 Intro Lab 2.pepo" />
     <None Include="..\..\..\Google Drive\School\Spring 2021\Computer Organization\PEP8 Intro Lab 3.pepo" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="prog.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

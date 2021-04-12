@@ -6,6 +6,8 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <sstream>
+#include <algorithm>
 using namespace std;
 
 
@@ -610,7 +612,7 @@ string RunProgram()
             *pc += 3;
         }
         else
-            return "\t!! INVALID INSTRUCTION - PROGRAM TERMINATED !!\n\n";
+            return "\t!! INVALID INSTRUCTION AT PC 0x" + DecToHex(cpu.reg.A_X_PC_SP[PC], 4) + " - PROGRAM TERMINATED !!\n\n";
 
         DisplayRegisters();
     } while (running);
@@ -620,9 +622,38 @@ string RunProgram()
 #pragma endregion
 
 
-int main()
+int main(int argc, char* argv[])
 {
-    LoadProgram(WriteProgram());
+    string program;
+
+    // If the user provides a valid file on the command line
+    if (argc == 2)
+    {
+        try
+        {
+            // Load the program directly from the file provided
+            string filename = argv[1];
+            ifstream file(filename);
+            ostringstream ss;
+            ss << file.rdbuf();
+            program = ss.str();
+            program.erase(remove(program.begin(), program.end(), '\n'), program.end()); // Remove all newlines
+            program.erase(remove(program.begin(), program.end(),  ' '), program.end()); // Remove all whitespace
+        }
+        catch (int e)
+        {
+            cout << "Inputted file was either not valid or not found." << endl;
+            return e; // Close program
+        }
+    }
+    // If the user does not provide any arguments
+    else
+    {
+        program = WriteProgram();
+    }
+
+    LoadProgram(program);
     cout << endl;
     cout << RunProgram();
+    return 0;
 }

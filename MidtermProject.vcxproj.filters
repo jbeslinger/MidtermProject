@@ -19,4 +19,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\Google Drive\School\Spring 2021\Computer Organization\PEP8 Intro Lab 1.pepo">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\..\..\Google Drive\School\Spring 2021\Computer Organization\PEP8 Intro Lab 2.pepo">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\..\..\Google Drive\School\Spring 2021\Computer Organization\PEP8 Intro Lab 3.pepo">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\..\..\Google Drive\School\Spring 2021\Computer Organization\Machine Code Adder.pep">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>

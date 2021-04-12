@@ -221,9 +221,10 @@ string DecToHex(int dec, int numberOfOutputDigits)
     }
 
     // Padding out the hex number with leading zeroes
-    if (out.length() < numberOfOutputDigits)
+    int len = out.length();
+    if (len < numberOfOutputDigits)
     {
-        for (int x = 0; x < numberOfOutputDigits - out.length() + 1; x++)
+        for (int x = 0; x < numberOfOutputDigits - len; x++)
             out = "0" + out;
     }
 
@@ -351,9 +352,11 @@ void LoadProgram(string code)
 // Write a box to the console that shows the state of the CPU registers
 void DisplayRegisters()
 {
-    cout << "|  A[0x" << DecToHex(cpu.reg.A_X_PC_SP[A], 4) << "]   X[0x" << DecToHex(cpu.reg.A_X_PC_SP[X], 4) << "]  |" << endl;
-    cout << "| PC[0x" << DecToHex(cpu.reg.A_X_PC_SP[PC], 4) << "]   SP[0x" << DecToHex(cpu.reg.A_X_PC_SP[SP], 4) << "]  |" << endl;
-    cout << "|     IR[0x" << DecToHex(cpu.reg.IR.opcode.whole, 2) << "]      |" << endl;
+    cout << "|  A[0x" << DecToHex(cpu.reg.A_X_PC_SP[A], 4) << "] ";
+        cout << "   X[0x" << DecToHex(cpu.reg.A_X_PC_SP[X], 4) << "] |" << endl;
+    cout << "| PC[0x" << DecToHex(cpu.reg.A_X_PC_SP[PC], 4) << "] ";
+        cout << "  SP[0x" << DecToHex(cpu.reg.A_X_PC_SP[SP], 4) << "] |" << endl;
+    cout << "|      IR[" << DecToHex(cpu.reg.IR.opcode.whole, 8) << "]       |" << endl;
     cout << endl;
 }
 
